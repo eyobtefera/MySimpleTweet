@@ -27,6 +27,8 @@ public class TimelineActivity extends AppCompatActivity {
     ArrayList<Tweet> tweets;
     RecyclerView rvTweets;
     final int TWEET_POST_REQUEST = 1;
+    final int TWEET_POST_RESULT = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,16 @@ public class TimelineActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.login, menu);//placeholder make sure to change this
         return true;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (TWEET_POST_REQUEST == requestCode && resultCode == TWEET_POST_RESULT  ){
+        Tweet tweet = data.getParcelableExtra("tweet");
+        tweets.add(0, tweet);
+        tweetAdapter.notifyItemInserted(0);
+        rvTweets.scrollToPosition(0);
+        }
+    }
     public void onComposeAction(MenuItem mi){
         Intent i = new Intent(this, ComposeActivity.class);
         startActivityForResult(i, TWEET_POST_REQUEST);
@@ -60,7 +72,7 @@ public class TimelineActivity extends AppCompatActivity {
         client.getHomeTimeline(new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-               Log.d("TwitterClinet", response.toString());
+               Log.d("TwitterClient", response.toString());
             }
 
             @Override
