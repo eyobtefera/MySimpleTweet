@@ -24,7 +24,6 @@
         android:id="@+id/tvBody"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/ivProfileImage"
         android:layout_below="@+id/tvName"
         android:layout_marginLeft="5dp"
         android:layout_toEndOf="@+id/ivProfileImage"
@@ -37,5 +36,15 @@
         android:layout_above="@+id/tvBody"
         android:layout_alignParentEnd="true"
         android:text="TextView" />
+
+    <ImageButton
+        android:id="@+id/replyButton"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignStart="@+id/tvBody"
+        android:layout_below="@+id/tvBody"
+        android:backgroundTint="@android:color/white"
+        android:onClick="onButtonClick"
+        app:srcCompat="@drawable/reply" />
 
 </RelativeLayout>

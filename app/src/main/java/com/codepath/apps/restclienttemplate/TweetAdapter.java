@@ -1,11 +1,13 @@
 package com.codepath.apps.restclienttemplate;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -63,11 +65,13 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
     }
     //create ViewHolder class
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder{
         public ImageView ivProfileImage;
         public TextView tvUsername;
         public TextView tvBody;
         public TextView tvCreation;
+        public ImageButton ivReply;
+
         public ViewHolder(View itemView){
             super(itemView);
 
@@ -76,6 +80,18 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
             tvUsername =  (TextView) itemView.findViewById(R.id.tvName);
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
             tvCreation = (TextView) itemView.findViewById(R.id.tvCreation);
+            ivReply = (ImageButton) itemView.findViewById(R.id.replyButton);
+
+            ivReply.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    Tweet replyTweet = mTweets.get(pos);
+                    Intent i = new Intent(context, replyActivity.class);
+                    i.putExtra("tweet", replyTweet);
+                    context.startActivity(i);
+                }
+            });
         }
     }
     public String getRelativeTimeAgo(String rawJsonDate){
@@ -104,5 +120,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
     public void addAll(List<Tweet> list) {
         mTweets.addAll(list);
         notifyDataSetChanged();
+    }
+    public void onButtonClick(View view) {
+
     }
 }

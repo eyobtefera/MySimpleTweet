@@ -5,7 +5,10 @@
         android:id="@+id/tweetButton"
         android:icon="@drawable/ic_vector_compose"
         app:showAsAction="ifRoom|withText"
+        android:orderInCategory="90"
         android:title="Tweet">
     </item>
+
+
 
 </menu>

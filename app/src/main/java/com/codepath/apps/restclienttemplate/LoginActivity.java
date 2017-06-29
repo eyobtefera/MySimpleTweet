@@ -10,6 +10,9 @@ import com.codepath.oauth.OAuthLoginActionBarActivity;
 
 public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 	final int TWEET_POST_REQUEST = 1;
+	MenuItem miActionProgressItem;
+
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -17,13 +20,15 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 		setContentView(R.layout.activity_login);
 	}
 
-
 	// Inflate the menu; this adds items to the action bar if it is present.
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.login, menu);
 		return true;
 	}
+
+
+
 	public void onComposeAction(MenuItem mi){
 		Intent i = new Intent(this, ComposeActivity.class);
 		startActivityForResult(i, TWEET_POST_REQUEST);
@@ -51,4 +56,5 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 		getClient().connect();
 	}
 
-}
+	}
+

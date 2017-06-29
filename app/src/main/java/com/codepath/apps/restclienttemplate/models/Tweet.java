@@ -66,4 +66,12 @@ public class Tweet implements Parcelable {
             return new Tweet[size];
         }
     };
+
+    public String getUserName() {
+        return user.screenName;
+    }
+
+    public String getUid() {
+        return Long.toString(uid);
+    }
 }
