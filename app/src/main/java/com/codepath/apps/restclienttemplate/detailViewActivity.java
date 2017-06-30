@@ -54,13 +54,22 @@ public class detailViewActivity extends AppCompatActivity {
         retweetButton = (ImageButton) findViewById(R.id.retweetButton);
         replyButton = (ImageButton) findViewById(R.id.replyButton);
         if(detailTweet.favorited)
-            {
-                likeButton.setBackgroundResource(R.drawable.ic_vector_heart);
-            }
+        {
+            likeButton.setBackgroundResource(R.drawable.ic_vector_heart);
+        }
         else
-            {
-                likeButton.setBackgroundResource(R.drawable.ic_vector_heart_stroke);
-            }
+        {
+            likeButton.setBackgroundResource(R.drawable.ic_vector_heart_stroke);
+        }
+        if(detailTweet.retweeted)
+        {
+            retweetButton.setBackgroundResource(R.drawable.ic_vector_retweet);
+        }
+        else
+        {
+            retweetButton.setBackgroundResource(R.drawable.ic_vector_retweet_stroke);
+        }
+
         Glide.with(this).
                 load(detailTweet.user.profileImageUrl).
                 bitmapTransform(new RoundedCornersTransformation(this, 15, 0)).
@@ -136,30 +145,62 @@ public class detailViewActivity extends AppCompatActivity {
         retweetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                client.reTweet(detailTweet, new JsonHttpResponseHandler(){
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        Toast.makeText(detailViewActivity.this, "Retweeted", Toast.LENGTH_LONG).show();
-                    }
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Log.d("TwitterClient", responseString);
-                        throwable.printStackTrace();
-                        Toast.makeText(detailViewActivity.this, "Failed", Toast.LENGTH_LONG).show();
-                    }
+                if (!detailTweet.retweeted) {
+                    client.reTweet(detailTweet, new JsonHttpResponseHandler() {
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            retweetButton.setImageResource(R.drawable.ic_vector_retweet);
+                            detailTweet.retweeted = true;
+                        }
 
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Log.d("TwitterClinet", errorResponse.toString());
-                        throwable.printStackTrace();
-                        Toast.makeText(detailViewActivity.this, "Failed", Toast.LENGTH_LONG).show();
-                    }
+                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                            Log.d("TwitterClient", responseString);
+                            throwable.printStackTrace();
+                            Toast.makeText(detailViewActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                        }
 
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                        Log.d("TwitterClinet", errorResponse.toString());
-                        throwable.printStackTrace();
-                        Toast.makeText(detailViewActivity.this, "Failed", Toast.LENGTH_LONG).show();
-                    }
-                });
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                            Log.d("TwitterClinet", errorResponse.toString());
+                            throwable.printStackTrace();
+                            Toast.makeText(detailViewActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                            Log.d("TwitterClinet", errorResponse.toString());
+                            throwable.printStackTrace();
+                            Toast.makeText(detailViewActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+                else{
+                    client.unReTweet(detailTweet, new JsonHttpResponseHandler() {
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            retweetButton.setImageResource(R.drawable.ic_vector_retweet_stroke);
+                            detailTweet.retweeted = false;
+                        }
+
+                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                            Log.d("TwitterClient", responseString);
+                            throwable.printStackTrace();
+                            Toast.makeText(detailViewActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                            Log.d("TwitterClinet", errorResponse.toString());
+                            throwable.printStackTrace();
+                            Toast.makeText(detailViewActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                            Log.d("TwitterClinet", errorResponse.toString());
+                            throwable.printStackTrace();
+                            Toast.makeText(detailViewActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
             }
         });
 
