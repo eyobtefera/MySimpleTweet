@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -18,6 +19,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 /**
  * Created by eyobtefera on 6/26/17.
@@ -55,8 +58,10 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         holder.tvUsername.setText(tweet.user.name + " " + "@" + tweet.user.screenName);
         holder.tvBody.setText(tweet.body);
         holder.tvCreation.setText("•" + displayTime);
-        Glide.with(context).load(tweet.user.profileImageUrl).into(holder.ivProfileImage);
-
+        Glide.with(context).
+                load(tweet.user.profileImageUrl).
+                bitmapTransform(new RoundedCornersTransformation(context, 15, 0)).
+                into(holder.ivProfileImage);
     }
 
     @Override
@@ -71,7 +76,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         public TextView tvBody;
         public TextView tvCreation;
         public ImageButton ivReply;
-
+        public RelativeLayout layout;
         public ViewHolder(View itemView){
             super(itemView);
 
@@ -81,6 +86,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
             tvCreation = (TextView) itemView.findViewById(R.id.tvCreation);
             ivReply = (ImageButton) itemView.findViewById(R.id.replyButton);
+            layout = (RelativeLayout) itemView.findViewById(R.id.detailView);
 
             ivReply.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -89,6 +95,16 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                     Tweet replyTweet = mTweets.get(pos);
                     Intent i = new Intent(context, replyActivity.class);
                     i.putExtra("tweet", replyTweet);
+                    context.startActivity(i);
+                }
+            });
+            layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    Tweet detailTweet = mTweets.get(pos);
+                    Intent i = new Intent(context, detailViewActivity.class);
+                    i.putExtra("tweet", detailTweet);
                     context.startActivity(i);
                 }
             });
