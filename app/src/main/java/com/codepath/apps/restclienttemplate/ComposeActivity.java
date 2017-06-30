@@ -65,7 +65,7 @@ public class ComposeActivity extends AppCompatActivity {
                 }
             }
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.d("TwitterClinet", responseString);
+                Log.d("TwitterClient", responseString);
                 throwable.printStackTrace();
             }
 

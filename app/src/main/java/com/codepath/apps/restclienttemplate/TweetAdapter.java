@@ -108,6 +108,16 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                     context.startActivity(i);
                 }
             });
+            tvBody.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    Tweet detailTweet = mTweets.get(pos);
+                    Intent i = new Intent(context, detailViewActivity.class);
+                    i.putExtra("tweet", detailTweet);
+                    context.startActivity(i);
+                }
+            });
         }
     }
     public String getRelativeTimeAgo(String rawJsonDate){
