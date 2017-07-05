@@ -48,7 +48,7 @@ public class detailViewActivity extends AppCompatActivity {
         ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
         screenName = (TextView) findViewById(R.id.screenName);
         userName = (TextView) findViewById(R.id.userName);
-        dateCreated = (TextView) findViewById(R.id.dateCreated);
+        dateCreated = (TextView) findViewById(R.id.dataCreated);
         tweetText = (TextView) findViewById(R.id.tweetText);
         likeButton = (ImageButton) findViewById(R.id.likeButton);
         retweetButton = (ImageButton) findViewById(R.id.retweetButton);

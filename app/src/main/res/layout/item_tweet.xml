@@ -20,7 +20,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignStart="@+id/tvBody"
-        android:text="TextView" />
+        android:singleLine="true"
+        android:text="TextView"
+        android:layout_toStartOf="@+id/tvCreation" />
 
     <TextView
         android:id="@+id/tvBody"

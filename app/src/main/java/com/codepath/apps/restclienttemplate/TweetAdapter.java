@@ -87,7 +87,17 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
             tvCreation = (TextView) itemView.findViewById(R.id.tvCreation);
             ivReply = (ImageButton) itemView.findViewById(R.id.replyButton);
             layout = (RelativeLayout) itemView.findViewById(R.id.detailView);
-
+            ivProfileImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    Tweet replyTweet = mTweets.get(pos);
+                    Intent i = new Intent(context, ProfileActivity.class);
+                    i.putExtra("tweet", replyTweet);
+                    i.putExtra("userProfile", false);
+                    context.startActivity(i);
+                }
+            });
             ivReply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
