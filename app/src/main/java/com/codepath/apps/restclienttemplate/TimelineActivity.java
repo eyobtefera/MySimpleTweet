@@ -9,23 +9,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.codepath.apps.restclienttemplate.fragments.HomeTimelineFragment;
 import com.codepath.apps.restclienttemplate.fragments.TweetsPagerAdapter;
+import com.codepath.apps.restclienttemplate.models.Tweet;
 
 public class TimelineActivity extends AppCompatActivity {
 
     final int TWEET_POST_REQUEST = 1;
     final int TWEET_POST_RESULT = 1;
     private SwipeRefreshLayout swipeContainer;
+    ViewPager vpPager;
+    TweetsPagerAdapter pageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
+        pageAdapter = new TweetsPagerAdapter(getSupportFragmentManager(), this);
 
         // get the view pager
-        ViewPager vpPager = (ViewPager) findViewById(R.id.viewpager);
+        vpPager = (ViewPager) findViewById(R.id.viewpager);
         // set the adapter for the pager
-        vpPager.setAdapter(new TweetsPagerAdapter(getSupportFragmentManager(), this));
+        vpPager.setAdapter(pageAdapter);
         // setup the TabLayout to use the view pager
         TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(vpPager);
@@ -65,21 +70,17 @@ public class TimelineActivity extends AppCompatActivity {
         startActivityForResult(i, TWEET_POST_REQUEST);
     }
 
-    //@Override
-   /*protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override
+   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (TWEET_POST_REQUEST == requestCode && resultCode == TWEET_POST_RESULT  ){
-        /*Tweet tweet = data.getParcelableExtra("tweet");
-        tweets.add(0, tweet);
-        tweetAdapter.notifyItemInserted(0);
-        rvTweets.scrollToPosition(0);*/
-        /*homeTimelineFragment timeLine = new HomeTimelineFragment();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .detach(timeLine)
-                    .attach(timeLine)
-                    .commit();
+        Tweet tweet = data.getParcelableExtra("tweet");
+            Object o = vpPager.getCurrentItem();
+            if (o instanceof HomeTimelineFragment) {
+                ((HomeTimelineFragment) o).addTweet(tweet);
+            }
+            ((HomeTimelineFragment) pageAdapter.getItem(vpPager.getCurrentItem())).addTweet(tweet);
         }
-    }*/
+    }
 
     /*public void fetchTimelineAsync(int page) {
         // Send the network request to fetch the updated data
