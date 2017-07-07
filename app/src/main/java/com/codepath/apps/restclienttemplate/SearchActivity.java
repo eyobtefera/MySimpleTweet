@@ -1,46 +1,63 @@
-package com.codepath.apps.restclienttemplate.fragments;
+package com.codepath.apps.restclienttemplate;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-import com.codepath.apps.restclienttemplate.TwitterApp;
-import com.codepath.apps.restclienttemplate.TwitterClient;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
-/**
- * Created by eyobtefera on 7/3/17.
- */
-
-public class HomeTimelineFragment extends TweetListFragment {
+public class SearchActivity extends AppCompatActivity {
 
     TwitterClient client;
+    String screenName;
+    TweetAdapter tweetAdapter;
+    ArrayList<Tweet> tweets;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_search);
+        screenName = getIntent().getExtras().getString("search_tweet");
         client = TwitterApp.getRestClient();
-        populateTimeline();
-    }
-    private void populateTimeline() {
-        client.getHomeTimeline(new JsonHttpResponseHandler(){
+        tweets = new ArrayList<>();
+        tweetAdapter = new TweetAdapter(tweets);
+        RecyclerView rvTweets = (RecyclerView) findViewById(R.id.searchTweets);
+        rvTweets.setAdapter(tweetAdapter);
+
+        rvTweets.setLayoutManager(new LinearLayoutManager(this));
+
+        client.searchTimeline(screenName, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("TwitterClient", response.toString());
+                try {
+                    JSONArray statuses = response.getJSONArray("statuses");
+                    for(int i =0; i<statuses.length(); i++)
+                    {
+                        Tweet tweet = Tweet.fromJSON(statuses.getJSONObject(i));
+                        tweets.add(tweet);
+                        tweetAdapter.notifyItemInserted(tweets.size() -1 );
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 //Log.d("TwitterClinet", response.toString());
                 // iterate through the JSOn array
                 // for each energy, deserialize the JSON object
-                addItems(response);
+
             }
 
             @Override
@@ -62,9 +79,6 @@ public class HomeTimelineFragment extends TweetListFragment {
             }
         });
     }
-    public void addTweet(Tweet tweet){
-        tweets.add(0, tweet);
-        tweetAdapter.notifyItemInserted(0);
-        rvTweets.scrollToPosition(0);
-    }
+
+
 }
