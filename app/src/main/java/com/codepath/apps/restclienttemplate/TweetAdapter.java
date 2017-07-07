@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,17 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+import cz.msebera.android.httpclient.Header;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 /**
@@ -34,13 +40,14 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
     public TweetAdapter(List<Tweet> tweets){
         mTweets = tweets;
     }
+    TwitterClient client;
     //for each row, inflate the layout and cache references into ViewHolder
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-
+        client = TwitterApp.getRestClient();
         View tweetView = inflater.inflate(R.layout.item_tweet, parent, false);
         ViewHolder viewHolder = new ViewHolder(tweetView);
         return viewHolder;
@@ -58,10 +65,27 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         holder.tvUsername.setText(tweet.user.name + " " + "@" + tweet.user.screenName);
         holder.tvBody.setText(tweet.body);
         holder.tvCreation.setText("•" + displayTime);
+
         Glide.with(context).
                 load(tweet.user.profileImageUrl).
                 bitmapTransform(new RoundedCornersTransformation(context, 15, 0)).
                 into(holder.ivProfileImage);
+        if(tweet.favorited)
+        {
+            holder.likeButton.setBackgroundResource(R.drawable.ic_vector_heart);
+        }
+        else
+        {
+            holder.likeButton.setBackgroundResource(R.drawable.ic_vector_heart_stroke);
+        }
+        if(tweet.retweeted)
+        {
+            holder.retweetButton.setBackgroundResource(R.drawable.ic_vector_retweet);
+        }
+        else
+        {
+            holder.retweetButton.setBackgroundResource(R.drawable.ic_vector_retweet_stroke);
+        }
     }
 
     @Override
@@ -76,6 +100,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         public TextView tvBody;
         public TextView tvCreation;
         public ImageButton ivReply;
+        public ImageButton likeButton;
+        public ImageButton retweetButton;
         public RelativeLayout layout;
         public ViewHolder(View itemView){
             super(itemView);
@@ -87,6 +113,122 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
             tvCreation = (TextView) itemView.findViewById(R.id.tvCreation);
             ivReply = (ImageButton) itemView.findViewById(R.id.replyButton);
             layout = (RelativeLayout) itemView.findViewById(R.id.detailView);
+            likeButton = (ImageButton) itemView.findViewById(R.id.likeButton);
+            retweetButton = (ImageButton) itemView.findViewById(R.id.retweetButton);
+            likeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    final Tweet replyTweet = mTweets.get(pos);
+                    if(!replyTweet.favorited)
+                        {
+                            client.favTweet(replyTweet, new JsonHttpResponseHandler(){
+                                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                    likeButton.setImageResource(R.drawable.ic_vector_heart);
+                                    replyTweet.favorited = true;
+                                }
+                                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                                    Log.d("TwitterClinet", responseString);
+                                    throwable.printStackTrace();
+                                }
+
+                                @Override
+                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                    Log.d("TwitterClinet", errorResponse.toString());
+                                    throwable.printStackTrace();
+                                }
+
+                                @Override
+                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                                    Log.d("TwitterClinet", errorResponse.toString());
+                                    throwable.printStackTrace();
+                                }
+                            });
+                        }
+                        else
+                        {
+                            client.unFavTweet(replyTweet, new JsonHttpResponseHandler(){
+                                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                    likeButton.setImageResource(R.drawable.ic_vector_heart_stroke);
+                                    replyTweet.favorited = false;
+                                }
+                                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                                    Log.d("TwitterClinet", responseString);
+                                    throwable.printStackTrace();
+                                }
+
+                                @Override
+                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                    Log.d("TwitterClinet", errorResponse.toString());
+                                    throwable.printStackTrace();
+                                }
+
+                                @Override
+                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                                    Log.d("TwitterClinet", errorResponse.toString());
+                                    throwable.printStackTrace();
+                                }
+                            });
+                        }
+                    }
+            });
+            retweetButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    final Tweet replyTweet = mTweets.get(pos);
+                    if (!replyTweet.retweeted) {
+                        client.reTweet(replyTweet, new JsonHttpResponseHandler() {
+                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                retweetButton.setImageResource(R.drawable.ic_vector_retweet);
+                                replyTweet.retweeted = true;
+                            }
+
+                            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                                Log.d("TwitterClient", responseString);
+                                throwable.printStackTrace();
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                Log.d("TwitterClinet", errorResponse.toString());
+                                throwable.printStackTrace();
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                                Log.d("TwitterClinet", errorResponse.toString());
+                                throwable.printStackTrace();
+                            }
+                        });
+                    }
+                    else{
+                        client.unReTweet(replyTweet, new JsonHttpResponseHandler() {
+                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                retweetButton.setImageResource(R.drawable.ic_vector_retweet_stroke);
+                                replyTweet.retweeted = false;
+                            }
+
+                            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                                Log.d("TwitterClient", responseString);
+                                throwable.printStackTrace();}
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                Log.d("TwitterClinet", errorResponse.toString());
+                                throwable.printStackTrace();
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                                Log.d("TwitterClinet", errorResponse.toString());
+                                throwable.printStackTrace();
+                            }
+                        });
+                    }
+
+                }
+            });
             ivProfileImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

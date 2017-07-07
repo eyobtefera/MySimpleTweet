@@ -46,10 +46,28 @@
         android:id="@+id/replyButton"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_alignStart="@+id/tvBody"
-        android:layout_below="@+id/tvBody"
         android:backgroundTint="@android:color/white"
         android:onClick="onButtonClick"
-        app:srcCompat="@drawable/reply" />
+        app:srcCompat="@drawable/reply"
+        android:layout_below="@+id/tvBody"
+        android:layout_alignStart="@+id/tvBody" />
+    <ImageButton
+        android:id="@+id/retweetButton"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:backgroundTint="@android:color/transparent"
+        app:srcCompat="@drawable/ic_vector_retweet_stroke"
+        android:layout_below="@+id/tvBody"
+        android:layout_centerHorizontal="true" />
+
+    <ImageButton
+        android:id="@+id/likeButton"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="34dp"
+        android:backgroundTint="@android:color/transparent"
+        app:srcCompat="@drawable/ic_vector_heart_stroke"
+        android:layout_below="@+id/tvBody"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

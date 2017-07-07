@@ -117,4 +117,9 @@ public class MentionsTimelineFragment extends TweetListFragment {
             }
         });
     }
+    public void addTweet(Tweet tweet){
+        tweets.add(0, tweet);
+        tweetAdapter.notifyItemInserted(0);
+        rvTweets.scrollToPosition(0);
+    }
 }
